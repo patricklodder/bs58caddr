@@ -1,8 +1,7 @@
 const bs58check = require('bs58check')
 
 class Base58AddressValidator {
-
-  constructor() {
+  constructor () {
     this.m_address = ''
     this.m_networkBytes = ''
   }
