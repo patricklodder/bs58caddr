@@ -7,12 +7,37 @@ A library to verify base58-check addresses for errors.
 
 - Verify an address for typos by calculating the checksum
 - Check that the correct network / address type byte is set.
-- Expose high level API to simply check against a coin
+- Expose high level API to simply check against all coins maintained by `coininfo`
 - Exposes low level API to check against any (set of) network byte(s) (or none)
+- Support for both websites and node.js
 
 ### Installation and usage (web)
 
-TODO
+Copy the file `bs58caddr.bundle.min.js` to your website project, and:
+
+
+```html
+<html>
+  <head>
+    <script src="bs58caddr.bundle.min.js"></script>
+  </head>
+  <body>
+    <div id="output"></div>
+    <button id="clickme">clickme</button>
+    <script>
+      const btn = document.querySelector('#clickme')
+      const out = document.querySelector('#output')
+
+      btn.addEventListener('click', (e) => {
+        e.preventDefault()
+        const result = bs58caddr.validateCoinAddress('BTC', '1EGqT3R8KW6PAyMQ85g6kEZrWcVKwyQM58')
+        const text = '1EGqT3R8KW6PAyMQ85g6kEZrWcVKwyQM58 is a ' + (result ? 'valid' : 'invalid') + ' bitcoin address<br>'
+        out.innerHTML = text
+      })
+    </script>
+  </body>
+</html>
+```
 
 ### Installation and usage (node.js)
 
