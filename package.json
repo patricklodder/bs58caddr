@@ -1,0 +1,27 @@
+{
+  "name": "bs58caddr",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx tape test/*",
+    "standard": "npx standard"
+  },
+  "author": "Patrick Lodder",
+  "license": "MIT",
+  "description": "A library to verify base58-check addresses for errors",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/patricklodder/bs58caddr.git"
+  },
+  "bugs": {
+    "url": "http://github.com/patricklodder/bs58caddr/issues"
+  },
+  "dependencies": {
+    "bs58check": "^2.1.2",
+    "coininfo": "^5.2.1"
+  },
+  "devDependencies": {
+    "standard": "^17.0.0",
+    "tape": "^5.6.1"
+  }
+}
