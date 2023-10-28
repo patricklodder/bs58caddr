@@ -48,7 +48,7 @@ class Base58AddressValidator {
     const buffer = bs58check.decode(this.m_address)
 
     if (this.m_networkBytes.length > 0) {
-      const networkByte = buffer.readUInt8(0)
+      const networkByte = buffer[0]
       if (this.m_networkBytes.indexOf(networkByte) === -1) {
         throw new Error('Unexpected network byte: ' + networkByte)
       }

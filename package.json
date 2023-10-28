@@ -18,7 +18,7 @@
     "url": "http://github.com/patricklodder/bs58caddr/issues"
   },
   "dependencies": {
-    "bs58check": "^2.1.2",
+    "bs58check": "^3.0.1",
     "coininfo": "^5.2.1"
   },
   "devDependencies": {
