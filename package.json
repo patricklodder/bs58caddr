@@ -1,6 +1,6 @@
 {
   "name": "bs58caddr",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "main": "index.js",
   "scripts": {
     "test": "npx tape test/*",
@@ -18,13 +18,13 @@
     "url": "http://github.com/patricklodder/bs58caddr/issues"
   },
   "dependencies": {
-    "bs58check": "^3.0.1",
+    "bs58check": "^4.0.0",
     "coininfo": "^5.2.1"
   },
   "devDependencies": {
-    "browserify": "^17.0.0",
+    "browserify": "^17.0.1",
     "jsmin": "^1.0.1",
-    "standard": "^17.1.0",
-    "tape": "^5.7.2"
+    "standard": "^17.1.2",
+    "tape": "^5.9.0"
   }
 }

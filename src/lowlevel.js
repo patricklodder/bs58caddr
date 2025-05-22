@@ -1,4 +1,4 @@
-const bs58check = require('bs58check')
+const bs58check = require('bs58check').default
 
 class Base58AddressValidator {
   constructor () {

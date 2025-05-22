@@ -490,49 +490,50 @@ exports.randomBytes = randomBytes;
 // Copyright (c) 2014-2018 The Bitcoin Core developers (base58.cpp)
 // Distributed under the MIT software license, see the accompanying
 // file LICENSE or http://www.opensource.org/licenses/mit-license.php.
+Object.defineProperty(exports, '__esModule', { value: true })
 function base (ALPHABET) {
   if (ALPHABET.length >= 255) { throw new TypeError('Alphabet too long') }
-  var BASE_MAP = new Uint8Array(256)
-  for (var j = 0; j < BASE_MAP.length; j++) {
+  const BASE_MAP = new Uint8Array(256)
+  for (let j = 0; j < BASE_MAP.length; j++) {
     BASE_MAP[j] = 255
   }
-  for (var i = 0; i < ALPHABET.length; i++) {
-    var x = ALPHABET.charAt(i)
-    var xc = x.charCodeAt(0)
+  for (let i = 0; i < ALPHABET.length; i++) {
+    const x = ALPHABET.charAt(i)
+    const xc = x.charCodeAt(0)
     if (BASE_MAP[xc] !== 255) { throw new TypeError(x + ' is ambiguous') }
     BASE_MAP[xc] = i
   }
-  var BASE = ALPHABET.length
-  var LEADER = ALPHABET.charAt(0)
-  var FACTOR = Math.log(BASE) / Math.log(256) // log(BASE) / log(256), rounded up
-  var iFACTOR = Math.log(256) / Math.log(BASE) // log(256) / log(BASE), rounded up
+  const BASE = ALPHABET.length
+  const LEADER = ALPHABET.charAt(0)
+  const FACTOR = Math.log(BASE) / Math.log(256) // log(BASE) / log(256), rounded up
+  const iFACTOR = Math.log(256) / Math.log(BASE) // log(256) / log(BASE), rounded up
   function encode (source) {
-    if (source instanceof Uint8Array) {
-    } else if (ArrayBuffer.isView(source)) {
+    // eslint-disable-next-line no-empty
+    if (source instanceof Uint8Array) { } else if (ArrayBuffer.isView(source)) {
       source = new Uint8Array(source.buffer, source.byteOffset, source.byteLength)
     } else if (Array.isArray(source)) {
       source = Uint8Array.from(source)
     }
     if (!(source instanceof Uint8Array)) { throw new TypeError('Expected Uint8Array') }
     if (source.length === 0) { return '' }
-        // Skip & count leading zeroes.
-    var zeroes = 0
-    var length = 0
-    var pbegin = 0
-    var pend = source.length
+    // Skip & count leading zeroes.
+    let zeroes = 0
+    let length = 0
+    let pbegin = 0
+    const pend = source.length
     while (pbegin !== pend && source[pbegin] === 0) {
       pbegin++
       zeroes++
     }
-        // Allocate enough space in big-endian base58 representation.
-    var size = ((pend - pbegin) * iFACTOR + 1) >>> 0
-    var b58 = new Uint8Array(size)
-        // Process the bytes.
+    // Allocate enough space in big-endian base58 representation.
+    const size = ((pend - pbegin) * iFACTOR + 1) >>> 0
+    const b58 = new Uint8Array(size)
+    // Process the bytes.
     while (pbegin !== pend) {
-      var carry = source[pbegin]
-            // Apply "b58 = b58 * 256 + ch".
-      var i = 0
-      for (var it1 = size - 1; (carry !== 0 || i < length) && (it1 !== -1); it1--, i++) {
+      let carry = source[pbegin]
+      // Apply "b58 = b58 * 256 + ch".
+      let i = 0
+      for (let it1 = size - 1; (carry !== 0 || i < length) && (it1 !== -1); it1--, i++) {
         carry += (256 * b58[it1]) >>> 0
         b58[it1] = (carry % BASE) >>> 0
         carry = (carry / BASE) >>> 0
@@ -541,38 +542,42 @@ function base (ALPHABET) {
       length = i
       pbegin++
     }
-        // Skip leading zeroes in base58 result.
-    var it2 = size - length
+    // Skip leading zeroes in base58 result.
+    let it2 = size - length
     while (it2 !== size && b58[it2] === 0) {
       it2++
     }
-        // Translate the result into a string.
-    var str = LEADER.repeat(zeroes)
+    // Translate the result into a string.
+    let str = LEADER.repeat(zeroes)
     for (; it2 < size; ++it2) { str += ALPHABET.charAt(b58[it2]) }
     return str
   }
   function decodeUnsafe (source) {
     if (typeof source !== 'string') { throw new TypeError('Expected String') }
     if (source.length === 0) { return new Uint8Array() }
-    var psz = 0
-        // Skip and count leading '1's.
-    var zeroes = 0
-    var length = 0
+    let psz = 0
+    // Skip and count leading '1's.
+    let zeroes = 0
+    let length = 0
     while (source[psz] === LEADER) {
       zeroes++
       psz++
     }
-        // Allocate enough space in big-endian base256 representation.
-    var size = (((source.length - psz) * FACTOR) + 1) >>> 0 // log(58) / log(256), rounded up.
-    var b256 = new Uint8Array(size)
-        // Process the characters.
-    while (source[psz]) {
-            // Decode character
-      var carry = BASE_MAP[source.charCodeAt(psz)]
-            // Invalid character
+    // Allocate enough space in big-endian base256 representation.
+    const size = (((source.length - psz) * FACTOR) + 1) >>> 0 // log(58) / log(256), rounded up.
+    const b256 = new Uint8Array(size)
+    // Process the characters.
+    while (psz < source.length) {
+      // Find code of next character
+      const charCode = source.charCodeAt(psz)
+      // Base map can not be indexed using char code
+      if (charCode > 255) { return }
+      // Decode character
+      let carry = BASE_MAP[charCode]
+      // Invalid character
       if (carry === 255) { return }
-      var i = 0
-      for (var it3 = size - 1; (carry !== 0 || i < length) && (it3 !== -1); it3--, i++) {
+      let i = 0
+      for (let it3 = size - 1; (carry !== 0 || i < length) && (it3 !== -1); it3--, i++) {
         carry += (BASE * b256[it3]) >>> 0
         b256[it3] = (carry % 256) >>> 0
         carry = (carry / 256) >>> 0
@@ -581,30 +586,30 @@ function base (ALPHABET) {
       length = i
       psz++
     }
-        // Skip leading zeroes in b256.
-    var it4 = size - length
+    // Skip leading zeroes in b256.
+    let it4 = size - length
     while (it4 !== size && b256[it4] === 0) {
       it4++
     }
-    var vch = new Uint8Array(zeroes + (size - it4))
-    var j = zeroes
+    const vch = new Uint8Array(zeroes + (size - it4))
+    let j = zeroes
     while (it4 !== size) {
       vch[j++] = b256[it4++]
     }
     return vch
   }
   function decode (string) {
-    var buffer = decodeUnsafe(string)
+    const buffer = decodeUnsafe(string)
     if (buffer) { return buffer }
     throw new Error('Non-base' + BASE + ' character')
   }
   return {
-    encode: encode,
-    decodeUnsafe: decodeUnsafe,
-    decode: decode
+    encode,
+    decodeUnsafe,
+    decode
   }
 }
-module.exports = base
+exports.default = base
 
 },{}],8:[function(require,module,exports){
 'use strict'
@@ -759,77 +764,82 @@ function fromByteArray (uint8) {
 }
 
 },{}],9:[function(require,module,exports){
-const basex = require('base-x')
-const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
-
-module.exports = basex(ALPHABET)
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var base_x_1 = __importDefault(require("base-x"));
+var ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+exports.default = (0, base_x_1.default)(ALPHABET);
 
 },{"base-x":7}],10:[function(require,module,exports){
-'use strict'
-
-var base58 = require('bs58')
-
-module.exports = function (checksumFn) {
-  // Encode a buffer as a base58-check encoded string
-  function encode (payload) {
-    var payloadU8 = Uint8Array.from(payload)
-    var checksum = checksumFn(payloadU8)
-    var length = payloadU8.length + 4
-    var both = new Uint8Array(length)
-    both.set(payloadU8, 0)
-    both.set(checksum.subarray(0, 4), payloadU8.length)
-    return base58.encode(both, length)
-  }
-
-  function decodeRaw (buffer) {
-    var payload = buffer.slice(0, -4)
-    var checksum = buffer.slice(-4)
-    var newChecksum = checksumFn(payload)
-
-    if (checksum[0] ^ newChecksum[0] |
-        checksum[1] ^ newChecksum[1] |
-        checksum[2] ^ newChecksum[2] |
-        checksum[3] ^ newChecksum[3]) return
-
-    return payload
-  }
-
-  // Decode a base58-check encoded string to a buffer, no result if checksum is wrong
-  function decodeUnsafe (string) {
-    var buffer = base58.decodeUnsafe(string)
-    if (!buffer) return
-
-    return decodeRaw(buffer)
-  }
-
-  function decode (string) {
-    var buffer = base58.decode(string)
-    var payload = decodeRaw(buffer, checksumFn)
-    if (!payload) throw new Error('Invalid checksum')
-    return payload
-  }
-
-  return {
-    encode: encode,
-    decode: decode,
-    decodeUnsafe: decodeUnsafe
-  }
+'use strict';
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = default_1;
+var bs58_1 = __importDefault(require("bs58"));
+function default_1(checksumFn) {
+    // Encode a buffer as a base58-check encoded string
+    function encode(payload) {
+        var payloadU8 = Uint8Array.from(payload);
+        var checksum = checksumFn(payloadU8);
+        var length = payloadU8.length + 4;
+        var both = new Uint8Array(length);
+        both.set(payloadU8, 0);
+        both.set(checksum.subarray(0, 4), payloadU8.length);
+        return bs58_1.default.encode(both);
+    }
+    function decodeRaw(buffer) {
+        var payload = buffer.slice(0, -4);
+        var checksum = buffer.slice(-4);
+        var newChecksum = checksumFn(payload);
+        // eslint-disable-next-line
+        if (checksum[0] ^ newChecksum[0] |
+            checksum[1] ^ newChecksum[1] |
+            checksum[2] ^ newChecksum[2] |
+            checksum[3] ^ newChecksum[3])
+            return;
+        return payload;
+    }
+    // Decode a base58-check encoded string to a buffer, no result if checksum is wrong
+    function decodeUnsafe(str) {
+        var buffer = bs58_1.default.decodeUnsafe(str);
+        if (buffer == null)
+            return;
+        return decodeRaw(buffer);
+    }
+    function decode(str) {
+        var buffer = bs58_1.default.decode(str);
+        var payload = decodeRaw(buffer);
+        if (payload == null)
+            throw new Error('Invalid checksum');
+        return payload;
+    }
+    return {
+        encode: encode,
+        decode: decode,
+        decodeUnsafe: decodeUnsafe
+    };
 }
 
 },{"bs58":9}],11:[function(require,module,exports){
-'use strict'
-
-var { sha256 } = require('@noble/hashes/sha256')
-var bs58checkBase = require('./base')
-
+'use strict';
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var sha256_1 = require("@noble/hashes/sha256");
+var base_js_1 = __importDefault(require("./base.cjs"));
 // SHA256(SHA256(buffer))
-function sha256x2 (buffer) {
-  return sha256(sha256(buffer))
+function sha256x2(buffer) {
+    return (0, sha256_1.sha256)((0, sha256_1.sha256)(buffer));
 }
+exports.default = (0, base_js_1.default)(sha256x2);
 
-module.exports = bs58checkBase(sha256x2)
-
-},{"./base":10,"@noble/hashes/sha256":5}],12:[function(require,module,exports){
+},{"./base.cjs":10,"@noble/hashes/sha256":5}],12:[function(require,module,exports){
 (function (Buffer){(function (){
 /*!
  * The buffer module from node.js, for the browser.
@@ -4422,7 +4432,7 @@ function validateCoinAddress (coin, address) {
 module.exports = validateCoinAddress
 
 },{"./lowlevel":41,"coininfo":13}],41:[function(require,module,exports){
-const bs58check = require('bs58check')
+const bs58check = require('bs58check').default
 
 class Base58AddressValidator {
   constructor () {
